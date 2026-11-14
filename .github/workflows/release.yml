@@ -1,0 +1,124 @@
+name: Build binaries
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install Nuitka
+        run: python -m pip install --upgrade nuitka
+
+      - name: Build Linux binary
+        run: python -m nuitka --mode=onefile --output-filename=get-bibtex-linux-x86_64.bin get-bibtex.py
+
+      - name: Test Linux binary
+        run: ./get-bibtex-linux-x86_64.bin --help
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: get-bibtex-linux-x86_64
+          path: get-bibtex-linux-x86_64.bin
+
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install Nuitka
+        run: python -m pip install --upgrade nuitka
+
+      - name: Build Windows binary
+        run: python -m nuitka --mode=onefile --msvc=latest --assume-yes-for-downloads --output-filename=get-bibtex-windows-x86_64.exe get-bibtex.py
+
+      - name: Test Windows binary
+        run: .\get-bibtex-windows-x86_64.exe --help
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: get-bibtex-windows-x86_64
+          path: get-bibtex-windows-x86_64.exe
+
+
+  build-macos:
+    strategy:
+      matrix:
+        include:
+          # - runner: macos-15
+          #   arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install Nuitka
+        run: python -m pip install --upgrade nuitka
+
+      - name: Build macOS binary
+        run: python -m nuitka --mode=onefile --output-filename=get-bibtex-macos-${{ matrix.arch }}.bin get-bibtex.py
+
+      - name: Test macOS binary
+        run: ./get-bibtex-macos-${{ matrix.arch }}.bin --help
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: get-bibtex-macos-${{ matrix.arch }}
+          path: get-bibtex-macos-${{ matrix.arch }}.bin
+
+
+  release:
+    needs:
+      - build-linux
+      - build-windows
+      - build-macos
+
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all binaries
+        uses: actions/download-artifact@v8
+        with:
+          pattern: get-bibtex-*
+          path: release-files
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        run: >
+          gh release create "${{ github.ref_name }}"
+          release-files/*
+          --repo "${{ github.repository }}"
+          --verify-tag
+          --generate-notes
+          --title "${{ github.ref_name }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
