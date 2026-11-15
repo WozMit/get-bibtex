@@ -38,7 +38,7 @@ import json
 import html
 import pathlib
 import difflib
-import certifi
+import functools
 import ssl
 
 # ========================= Global variables =========================
@@ -67,6 +67,33 @@ max_results = 100
 total_text_width = 105
 text_threshold = 85
 # ====================================================================
+
+
+@functools.lru_cache(maxsize=1)
+def make_ssl_context():
+    context = ssl.create_default_context()
+
+    with urllib.request.urlopen(
+        "https://curl.se/ca/cacert.pem",
+        context=context,
+        timeout=30,
+    ) as response:
+        downloaded = response.read()
+
+    certificates = re.findall(
+        rb"-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----",
+        downloaded,
+        flags=re.DOTALL,
+    )
+
+    if not certificates:
+        raise ValueError("The download contained no CA certificates.")
+
+    context.load_verify_locations(
+        cadata=b"\n".join(certificates).decode("ascii")
+    )
+
+    return context
 
 
 def to_clipboard(text):
@@ -437,7 +464,9 @@ def gen_msn_bib_bib(bibtex):
         MREF_URL = "https://mathscinet.ams.org/mathscinet-mref"
         url = MREF_URL + "?" + urllib.parse.urlencode({"ref": data["entry"], "dataType": "bibtex"})
         request = urllib.request.Request(url, headers={"User-Agent": "GetMRef"})
-        with urllib.request.urlopen(request) as response:
+        with urllib.request.urlopen(
+            request, context=make_ssl_context(), timeout=30
+        ) as response:
             result = dict(data)
             result["response"] = response.read().decode("utf-8", errors="replace")
             return result
@@ -493,8 +522,8 @@ def fetch_json_from_url(url):
     )
     try:
         # Pass the req object to urlopen instead of the raw url string
-        context = ssl.create_default_context(cafile=certifi.where())
-        with urllib.request.urlopen(req, context=context) as response:
+        context = make_ssl_context()
+        with urllib.request.urlopen(req, context=context, timeout=30) as response:
             raw_data = response.read()
             if response.headers.get("Content-Encoding") == "gzip":
                 raw_data = gzip.decompress(raw_data)
@@ -627,7 +656,7 @@ def citation_matching_zb(params):
         return data['result'][0]
     except:
         print("Error in second connection")
-        exit(0)
+        raise SystemExit(0)
 
 
 def interactive_search_zb(params):
@@ -638,7 +667,7 @@ def interactive_search_zb(params):
             params['search_term'] = input("Search term: ")
         except:
             print()
-            exit(0)
+            raise SystemExit(0)
     if len(params['search_term']) > 100:
         return citation_matching_zb(params)
     url = get_request_url(params)
@@ -726,4 +755,10 @@ if params.get('file'):
     # file = file.parent / (file.stem + '-prime' + file.suffix)
     # file.write_text(new_text, encoding="utf-8")
 else:
+    try:
+        make_ssl_context()
+    except (OSError, ValueError) as exc:
+        raise SystemExit(
+            f"Could not download or load CA certificates: {exc}"
+        )
     new_query(params)
