@@ -150,7 +150,7 @@ The binaries accept the same command-line arguments as the Python program.
 
 ### 2. Run the native Python program
 
-This is the simplest option if Python is already installed. **Python 3.12 or newer is required.**
+This is the simplest option if Python is already installed. **Python 3.8 or newer is required.**
 
 Run:
 

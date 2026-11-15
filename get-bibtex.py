@@ -38,6 +38,8 @@ import json
 import html
 import pathlib
 import difflib
+import certifi
+import ssl
 
 # ========================= Global variables =========================
 exclude_doi = False
@@ -491,7 +493,8 @@ def fetch_json_from_url(url):
     )
     try:
         # Pass the req object to urlopen instead of the raw url string
-        with urllib.request.urlopen(req) as response:
+        context = ssl.create_default_context(cafile=certifi.where())
+        with urllib.request.urlopen(req, context=context) as response:
             raw_data = response.read()
             if response.headers.get("Content-Encoding") == "gzip":
                 raw_data = gzip.decompress(raw_data)
@@ -543,7 +546,7 @@ def show_query_results(data, params):
                 print((indent_str + line).ljust(total_text_width))
         print(" " * total_text_width)
         if params.get('max_results_limit') and idx == params['max_results_limit']:
-            output_params['options'] = [{'key': 'a', 'label': f'Show all results ({len(data['result'])})'}] + output_params['options']
+            output_params['options'] = [{'key': 'a', 'label': f"Show all results ({len(data['result'])})"}] + output_params['options']
             output_params['n_available'] = idx
             break
         idx += 1
