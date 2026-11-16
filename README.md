@@ -6,7 +6,71 @@ It lets a user perform a basic search in the [zbMATH Open](https://zbmath.org/) 
 
 An internet connection is required to query zbMATH and MathSciNet. No subscription to MathSciNet is required.
 
+## Running the program
+
+There are two options to use `get-bibtex`.
+
+### 1. Download and use a prebuilt binary
+
+Each GitHub release provides standalone x86-64 binaries for Windows, Linux, and macOS:
+
+- `get-bibtex-windows-x86_64.exe`
+- `get-bibtex-linux-x86_64.bin`
+- `get-bibtex-macos-x86_64.bin`
+
+Python is not required when using these binaries.
+
+#### Windows
+
+Double-click `get-bibtex-windows-x86_64.exe`, or open a terminal (cmd or PowerShell) in the same folder and run one of these:
+
+Command Prompt:
+
+```bash
+get-bibtex-windows-x86_64.exe
+```
+
+PowerShell:
+
+```powershell
+.\get-bibtex-windows-x86_64.exe
+```
+
+#### Linux
+
+```bash
+chmod +x get-bibtex-linux-x86_64.bin    # make the binary executable (required only once)
+./get-bibtex-linux-x86_64.bin
+```
+
+#### macOS
+
+```bash
+chmod +x get-bibtex-macos-x86_64.bin    # make the binary executable (required only once)
+./get-bibtex-macos-x86_64.bin
+```
+
+The binaries accept the same command-line arguments as the Python program.
+
+### 2. Run the native Python program
+
+This works if Python is already installed. **Python 3.8 or newer is required.**
+
+Run:
+
+```bash
+python get-bibtex.py
+```
+
+On systems where Python 3 is invoked explicitly:
+
+```bash
+python3 get-bibtex.py
+```
+
 ## Usage
+
+This section assumes that the program can be invoked by running the command `get-bibtex`. If this is not the case, use the appropriate command instead (e.g., `get-bibtex-windows-x86_64.exe`, `get-bibtex.py`, etc).
 
 Start an interactive search:
 
@@ -20,7 +84,7 @@ The program will ask for a search term:
 Search term: regular partitions szemeredi
 ```
 
-Search directly from the command line:
+Alternatively, search directly from the command line:
 
 ```bash
 get-bibtex "regular partitions szemeredi"
@@ -45,6 +109,10 @@ The search results are presented in the terminal as:
 (4) Regular partitions of hypergraphs: regularity lemmas                                2007
     Vojtěch Rödl; Mathias Schacht
     Comb. Probab. Comput.
+
+Numeric (1-4)  [a] Show all results (34)  [n] New search  [y] Add/change year
+
+Your choice: 
 ```
 
 and the user is able to select one of these results or refine the search. After a document is selected, the program attempts to locate the corresponding MathSciNet record. If one is found, the available metadata is combined before the final BibTeX entry is printed.
@@ -110,58 +178,6 @@ or
 
 ```bash
 python get-bibtex.py "regular partitions" -y 1978
-```
-
-## Running the program
-
-There are two ways to use `get-bibtex`.
-
-### 1. Download and use a prebuilt binary
-
-Each GitHub release provides standalone x86-64 binaries for Windows, Linux, and macOS:
-
-- `get-bibtex-windows-x86_64.exe`
-- `get-bibtex-linux-x86_64.bin`
-- `get-bibtex-macos-x86_64.bin`
-
-Python is not required when using these binaries.
-
-#### Windows
-
-```powershell
-.\get-bibtex-windows-x86_64.exe
-```
-
-#### Linux
-
-```bash
-chmod +x get-bibtex-linux-x86_64.bin    # make the binary executable (required only once)
-./get-bibtex-linux-x86_64.bin
-```
-
-#### macOS
-
-```bash
-chmod +x get-bibtex-macos-x86_64.bin    # make the binary executable (required only once)
-./get-bibtex-macos-x86_64.bin
-```
-
-The binaries accept the same command-line arguments as the Python program.
-
-### 2. Run the native Python program
-
-This is the simplest option if Python is already installed. **Python 3.8 or newer is required.**
-
-Run:
-
-```bash
-python get-bibtex.py
-```
-
-On systems where Python 3 is invoked explicitly:
-
-```bash
-python3 get-bibtex.py
 ```
 
 ## Planned features
