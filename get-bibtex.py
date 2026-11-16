@@ -46,7 +46,7 @@ exclude_doi = False
 exclude_url = False
 exclude_url_of_doi = False
 exclude_journal_issue_number = False
-exclude_language = False
+exclude_language = True
 abbreviate_first_names = False
 include_url_for_arxiv = True
 prefer_mathscinet_entries = True
@@ -57,9 +57,9 @@ exclude_mathscinet_mrnumber = False
 exclude_mathscinet_mrreviewer = False
 exclude_zbmath_field = False
 exclude_zbl_field = False
-exclude_keywords = False
+exclude_keywords = True
 custom_field_order = True
-automatic_copy_to_clipboard = False
+automatic_copy_to_clipboard = True
 finish_execution_automatically = False
 max_authors_in_citekey = 4
 default_results = 7
@@ -708,7 +708,7 @@ def new_query(params = None):
     if automatic_copy_to_clipboard:
         to_clipboard(bibtex)
     if not finish_execution_automatically:
-        input("")
+        input("\nPress ENTER to finish... ")
 
 
 def parse_arguments():
