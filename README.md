@@ -10,9 +10,9 @@ An internet connection is required to query zbMATH and MathSciNet. No subscripti
 
 There are two options to use `get-bibtex`.
 
-### 1. Download and use a prebuilt binary
+### Option 1. Download and use a prebuilt binary
 
-Each GitHub release provides standalone x86-64 binaries for Windows, Linux, and macOS:
+The [latest release page](https://github.com/WozMit/get-bibtex/releases/latest) provides standalone x86-64 binaries for Windows, Linux, and macOS:
 
 - `get-bibtex-windows-x86_64.exe`
 - `get-bibtex-linux-x86_64.bin`
@@ -22,7 +22,7 @@ Python is not required when using these binaries.
 
 #### Windows
 
-Double-click `get-bibtex-windows-x86_64.exe`, or open a terminal (cmd or PowerShell) in the same folder and run one of these:
+Double-click `get-bibtex-windows-x86_64.exe` to open a terminal already running the program. Alternatively, open a terminal (cmd or PowerShell) in the same folder as the binary and run one of these:
 
 Command Prompt:
 
@@ -52,7 +52,7 @@ chmod +x get-bibtex-macos-x86_64.bin    # make the binary executable (required o
 
 The binaries accept the same command-line arguments as the Python program.
 
-### 2. Run the native Python program
+### Option 2. Run the native Python program
 
 This works if Python is already installed. **Python 3.8 or newer is required.**
 
